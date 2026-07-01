@@ -33,3 +33,6 @@ Thumbs.db
 # the curated ones under samples/bundles/ are committed intentionally)
 /*-okf/
 /out/
+
+# Marketing notes — keep local, not in the public repo
+docs/launch-kit.md
