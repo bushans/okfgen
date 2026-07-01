@@ -4,7 +4,7 @@ okf_version: "0.1"
 
 # Nimbus Docs
 
-_Source: C:\bys\private\work\okfd\samples\recipes\observability_docs_
+_Source: samples/recipes/observability_docs_
 
 ## Root
 

@@ -51,7 +51,8 @@ okfgen generate schema:./ddl.sql                      # a database (SQL DDL)
 okfgen generate bq:my-gcp-project                     # BigQuery datasets/tables
 okfgen generate firebase:my-firebase-project          # Firestore collections
 okfgen generate https://docs.mytool.dev/              # a documentation site
-okfgen generate ckan:https://portal/dataset/some-set  # a live open-data portal
+okfgen generate ckan:https://portal/dataset/some-set  # a live CKAN open-data portal
+okfgen generate socrata:https://data.cityofnewyork.us/d/erm2-nwe9  # a live Socrata dataset
 ```
 
 | Input | Detected as | What it extracts |
@@ -62,6 +63,7 @@ okfgen generate ckan:https://portal/dataset/some-set  # a live open-data portal
 | `bq:PROJECT` | `bigquery` | one concept per dataset and per table, with column schemas |
 | `firebase:PROJECT` | `firebase` | one concept per Firestore collection, fields/types inferred from sampled docs |
 | `ckan:PORTAL/dataset/SLUG` | `ckan` | a live [CKAN](https://ckan.org) open-data dataset → one concept per resource, with **live column schemas + example rows** from the DataStore. No auth; works against data.gov, data.gov.au, the EU portal, city portals, etc. |
+| `socrata:DOMAIN/d/4x4-ID` | `socrata` | a live [Socrata](https://dev.socrata.com) dataset (NYC Open Data, Seattle, Chicago, many state portals) → Dataset + Table concepts with **live column schema + descriptions + example rows**. No auth. |
 | `http(s)://…` | `web` | crawls same-host pages (depth/page budget) into one concept per page |
 
 Cloud sources use Application Default Credentials

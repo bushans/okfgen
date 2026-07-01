@@ -37,9 +37,14 @@ RECIPES = ROOT / "recipes"
 BUNDLES = ROOT / "bundles"
 
 
-def _generate(input_value: str, kind: str, out_name: str, options=None) -> Path:
+def _generate(input_value: str, kind: str, out_name: str, options=None,
+              source_label: str = None) -> Path:
     out = BUNDLES / out_name
-    source = build_source(input_value, kind=kind, options=options or {})
+    options = dict(options or {})
+    if source_label:
+        # Keep committed bundles portable — no absolute build paths baked in.
+        options["source_label"] = source_label
+    source = build_source(input_value, kind=kind, options=options)
     bundle = source.build()
     write_bundle(bundle, out, overwrite=True)
     return out
@@ -56,11 +61,13 @@ def main() -> int:
 
     # 2) Source-system (repo) bundle.
     petclinic = _generate(str(RECIPES / "petclinic_app"), "local", "petclinic-api",
-                          options={"title": "PetClinic API"})
+                          options={"title": "PetClinic API"},
+                          source_label="samples/recipes/petclinic_app")
 
     # 3) Documentation-site bundle.
     docs = _generate(str(RECIPES / "observability_docs"), "local", "observability-docs",
-                     options={"title": "Nimbus Docs"})
+                     options={"title": "Nimbus Docs"},
+                     source_label="samples/recipes/observability_docs")
 
     # Visualizer output + conformance check for each.
     ok = True

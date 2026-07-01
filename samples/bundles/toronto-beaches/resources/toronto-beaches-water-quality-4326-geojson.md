@@ -7,7 +7,7 @@ tags:
   - open-data
   - resource
   - geojson
-timestamp: "2026-07-01T08:32:32+00:00"
+timestamp: "2026-07-01T09:12:31+00:00"
 format: GeoJSON
 ---
 

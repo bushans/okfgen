@@ -4,7 +4,7 @@ okf_version: "0.1"
 
 # PetClinic API
 
-_Source: C:\bys\private\work\okfd\samples\recipes\petclinic_app_
+_Source: samples/recipes/petclinic_app_
 
 ## Root
 

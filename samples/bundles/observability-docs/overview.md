@@ -2,7 +2,7 @@
 type: Project
 title: Nimbus Docs
 description: Overview of Nimbus Docs.
-resource: "C:\\bys\\private\\work\\okfd\\samples\\recipes\\observability_docs"
+resource: samples/recipes/observability_docs
 tags:
   - project
 timestamp: "2026-07-01T00:00:00+00:00"

@@ -8,7 +8,7 @@ from .sources import REGISTRY, Source, SourceError
 
 # Priority order for auto-detection. Prefixed cloud sources win first (they use
 # unambiguous `bq:` / `firebase:` prefixes), then local dirs, then git, then web.
-_DETECT_ORDER = ["bigquery", "firebase", "ckan", "schema", "local", "git", "web"]
+_DETECT_ORDER = ["bigquery", "firebase", "ckan", "socrata", "schema", "local", "git", "web"]
 
 
 def build_source(input_value: str, kind: Optional[str] = None, options: Optional[dict] = None) -> Source:

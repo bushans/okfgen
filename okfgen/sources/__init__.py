@@ -12,6 +12,7 @@ from .bigquery import BigQuerySource
 from .firebase import FirebaseSource
 from .schema import SchemaSource
 from .ckan import CkanSource
+from .socrata import SocrataSource
 
 # Registry keyed by the `--type` value / auto-detected kind.
 REGISTRY: Dict[str, Type[Source]] = {
@@ -22,6 +23,7 @@ REGISTRY: Dict[str, Type[Source]] = {
     FirebaseSource.kind: FirebaseSource,
     SchemaSource.kind: SchemaSource,
     CkanSource.kind: CkanSource,
+    SocrataSource.kind: SocrataSource,
 }
 
 __all__ = [
@@ -35,4 +37,5 @@ __all__ = [
     "FirebaseSource",
     "SchemaSource",
     "CkanSource",
+    "SocrataSource",
 ]

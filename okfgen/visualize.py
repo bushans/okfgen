@@ -37,7 +37,8 @@ def build_graph_data(bundle: LoadedBundle) -> dict:
     links = [{"source": s, "target": t} for s, t in edges]
     return {
         "okf_version": bundle.okf_version,
-        "generated_from": str(bundle.directory),
+        # Bundle name only — avoid leaking absolute build paths into committed HTML.
+        "generated_from": bundle.directory.name,
         "nodes": nodes,
         "links": links,
     }
