@@ -14,6 +14,7 @@
 </p>
 
 <p align="center">
+  <a href="https://pypi.org/project/okfgen/"><img src="https://img.shields.io/pypi/v/okfgen.svg" alt="PyPI"></a>
   <a href="https://github.com/bushans/okfgen/actions/workflows/ci.yml"><img src="https://github.com/bushans/okfgen/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.9%2B-blue.svg" alt="Python 3.9+">
   <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License Apache-2.0">
@@ -61,15 +62,15 @@ Zero-install with [`uv`](https://docs.astral.sh/uv/) — turn *this* directory i
 a knowledge graph and open it:
 
 ```bash
-uvx --from git+https://github.com/bushans/okfgen okfgen generate . -o my-okf
-uvx --from git+https://github.com/bushans/okfgen okfgen visualize my-okf -o my-okf/graph.html
+uvx okfgen generate . -o my-okf
+uvx okfgen visualize my-okf -o my-okf/graph.html
 # then open my-okf/graph.html
 ```
 
 Or with pip:
 
 ```bash
-pip install git+https://github.com/bushans/okfgen.git   # PyPI release coming soon
+pip install okfgen
 okfgen generate . -o my-okf && okfgen visualize my-okf -o my-okf/graph.html
 ```
 
@@ -111,12 +112,12 @@ okfgen generate . -o my-okf && okfgen visualize my-okf -o my-okf/graph.html
 ## Install
 
 ```bash
-pip install git+https://github.com/bushans/okfgen.git   # core: git, local, web, schema (zero deps)
-# from a clone, for development:
-pip install -e '.[all]'     # add BigQuery, Firebase, PyYAML
+pip install okfgen                 # core: git, local, web, schema (zero deps)
+pip install "okfgen[all]"          # + BigQuery, Firebase, MCP, PyYAML
 ```
 
-Optional extras: `.[bigquery]`, `.[firebase]`, `.[yaml]`, `.[dev]`.
+Optional extras: `[bigquery]`, `[firebase]`, `[mcp]`, `[yaml]`, `[dev]`.
+For development from a clone: `pip install -e '.[dev]'`.
 
 ---
 
