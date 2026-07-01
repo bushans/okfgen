@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install (with dev extras)
+        run: python -m pip install -e '.[dev]'
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: Rebuild offline sample bundles (generators must not crash)
+        run: python samples/build_samples.py
+
+      - name: Validate committed sample bundles for OKF conformance
+        run: |
+          set -e
+          for d in samples/bundles/*/; do
+            echo "== validating $d =="
+            python -m okfgen.cli validate "$d"
+          done
+
+      - name: Smoke-test the CLI end to end
+        run: |
+          set -e
+          okfgen generate ./samples/recipes/petclinic_app --type local -o /tmp/ci-okf --overwrite
+          okfgen enrich /tmp/ci-okf
+          okfgen visualize /tmp/ci-okf -o /tmp/ci-okf/graph.html
+          okfgen search /tmp/ci-okf "owner"
+          okfgen ask /tmp/ci-okf "what does this project do"
+          okfgen validate /tmp/ci-okf
