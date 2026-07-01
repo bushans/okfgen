@@ -5,26 +5,53 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "okfgen"
 version = "0.1.0"
-description = "Deterministic automation tool that generates Open Knowledge Format (OKF) bundles from sources like git repos, BigQuery, Firebase, local directories, and web docs."
+description = "Turn any repo, database, docs site, or open-data portal into an AI-ready Open Knowledge Format (OKF) knowledge graph — deterministically, no LLM required."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "Apache-2.0" }
 authors = [{ name = "okfgen contributors" }]
-keywords = ["okf", "open-knowledge-format", "knowledge-catalog", "documentation", "metadata"]
+keywords = [
+  "okf", "open-knowledge-format", "knowledge-graph", "data-catalog",
+  "metadata", "ai-agents", "rag", "documentation", "ckan", "socrata", "mcp",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Documentation",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Utilities",
+]
 
 # Core has ZERO required third-party dependencies: git + local + webdocs work
 # out of the box using only the standard library. Cloud sources are optional.
 dependencies = []
 
+[project.urls]
+Homepage = "https://github.com/bushans/okfgen"
+Repository = "https://github.com/bushans/okfgen"
+"Live demo" = "https://bushans.github.io/okfgen/"
+Issues = "https://github.com/bushans/okfgen/issues"
+Specification = "https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md"
+
 [project.optional-dependencies]
 yaml = ["PyYAML>=6.0"]
 bigquery = ["google-cloud-bigquery>=3.0"]
 firebase = ["google-cloud-firestore>=2.0"]
-all = ["PyYAML>=6.0", "google-cloud-bigquery>=3.0", "google-cloud-firestore>=2.0"]
-dev = ["pytest>=7.0", "PyYAML>=6.0"]
+mcp = ["mcp>=1.2.0"]
+all = ["PyYAML>=6.0", "google-cloud-bigquery>=3.0", "google-cloud-firestore>=2.0", "mcp>=1.2.0"]
+dev = ["pytest>=7.0", "PyYAML>=6.0", "build>=1.0", "twine>=5.0"]
 
 [project.scripts]
 okfgen = "okfgen.cli:main"
+okfgen-mcp = "okfgen.mcp_server:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

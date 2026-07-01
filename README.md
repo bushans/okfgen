@@ -189,6 +189,35 @@ the citations behind the answer — so the reasoning is auditable.
 
 ---
 
+## Use it inside your AI agent (MCP)
+
+okfgen ships an **MCP server**, so Claude Desktop, Claude Code, Cursor, and any
+[Model Context Protocol](https://modelcontextprotocol.io) client can produce and
+reason over OKF bundles without leaving the agent.
+
+```bash
+pip install "okfgen[mcp]"
+okfgen-mcp            # stdio MCP server
+```
+
+Register it (e.g. Claude Desktop `claude_desktop_config.json`, or Cursor's MCP
+settings):
+
+```json
+{
+  "mcpServers": {
+    "okfgen": { "command": "okfgen-mcp" }
+  }
+}
+```
+
+Exposed tools: `okfgen_generate`, `okfgen_search`, `okfgen_ask`,
+`okfgen_validate`, `okfgen_visualize`, `okfgen_list_source_types`. Now an agent
+can say *"catalog this database and tell me how orders join to customers"* and
+get grounded, cited answers.
+
+---
+
 ## Sample bundles
 
 **Browse the sample knowledge graphs online:** https://bushans.github.io/okfgen/
