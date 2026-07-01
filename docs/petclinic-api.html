@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OKF — petclinic-api</title>
+<style>
+  :root { --bg:#0f1420; --panel:#171e2e; --line:#2a3450; --fg:#e6ebf5; --muted:#8b98b8; --accent:#5b9dff; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--fg);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  #app { display:flex; height:100vh; }
+  #side { width:320px; flex:0 0 320px; background:var(--panel); border-right:1px solid var(--line);
+    display:flex; flex-direction:column; overflow:hidden; }
+  #side h1 { font-size:15px; margin:0; padding:14px 16px; border-bottom:1px solid var(--line); }
+  #side h1 small { color:var(--muted); font-weight:400; display:block; font-size:11px; margin-top:2px; }
+  .pad { padding:12px 16px; }
+  input[type=search] { width:100%; padding:8px 10px; background:var(--bg); border:1px solid var(--line);
+    color:var(--fg); border-radius:6px; outline:none; }
+  input[type=search]:focus { border-color:var(--accent); }
+  .legend { overflow:auto; flex:1; }
+  .legend label { display:flex; align-items:center; gap:8px; padding:4px 16px; cursor:pointer; font-size:13px; }
+  .legend label:hover { background:rgba(255,255,255,.03); }
+  .swatch { width:12px; height:12px; border-radius:3px; flex:0 0 12px; }
+  .count { color:var(--muted); margin-left:auto; font-size:12px; }
+  #detail { border-top:1px solid var(--line); padding:14px 16px; max-height:42%; overflow:auto; }
+  #detail .t { font-size:12px; color:var(--accent); text-transform:uppercase; letter-spacing:.04em; }
+  #detail h2 { font-size:16px; margin:4px 0 8px; }
+  #detail a { color:var(--accent); word-break:break-all; }
+  #detail .tags span { display:inline-block; background:var(--bg); border:1px solid var(--line);
+    border-radius:10px; padding:1px 8px; margin:2px 4px 2px 0; font-size:11px; color:var(--muted); }
+  #detail ul { margin:6px 0; padding-left:18px; }
+  #detail li a { cursor:pointer; }
+  #main { flex:1; position:relative; }
+  canvas { display:block; width:100%; height:100%; }
+  #hint { position:absolute; bottom:10px; left:12px; color:var(--muted); font-size:12px; pointer-events:none; }
+  #empty { position:absolute; inset:0; display:none; align-items:center; justify-content:center; color:var(--muted); }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="side">
+    <h1>OKF — petclinic-api<small id="stats"></small></h1>
+    <div class="pad"><input id="q" type="search" placeholder="Search concepts…" autocomplete="off"></div>
+    <div class="legend" id="legend"></div>
+    <div id="detail"><span class="t">Tip</span><h2>Click a node</h2>
+      <div class="muted" style="color:var(--muted)">Explore the knowledge graph. Nodes are concepts; edges are markdown links between them.</div>
+    </div>
+  </div>
+  <div id="main">
+    <canvas id="cv"></canvas>
+    <div id="hint">drag to pan · scroll to zoom · click a node</div>
+    <div id="empty">No concepts match your search.</div>
+  </div>
+</div>
+<script id="data" type="application/json">{"okf_version": "0.1", "generated_from": "petclinic-api", "nodes": [{"id": "dependencies.md", "title": "PetClinic API — Dependencies", "type": "Dependencies", "description": "Declared third-party dependencies parsed from manifest files.", "resource": "", "tags": ["dependencies"], "degree": 0}, {"id": "modules/src.md", "title": "src", "type": "Code Module", "description": "Source directory `src` — 3 file(s).", "resource": "src", "tags": ["code", "JavaScript"], "degree": 0}, {"id": "overview.md", "title": "PetClinic API", "type": "Project", "description": "PetClinic API", "resource": "samples/recipes/petclinic_app", "tags": ["JavaScript"], "degree": 0}], "links": []}</script>
+<script>
+(function(){
+  const DATA = JSON.parse(document.getElementById('data').textContent);
+  const nodes = DATA.nodes, links = DATA.links;
+  const byId = Object.fromEntries(nodes.map(n=>[n.id,n]));
+  document.getElementById('stats').textContent =
+    nodes.length + ' concepts · ' + links.length + ' links · OKF ' + (DATA.okf_version||'0.1');
+
+  // Palette by type.
+  const PALETTE = ['#5b9dff','#57d9a3','#f4b740','#ff7a90','#b58cff','#4dd0e1','#ff9f6e','#9ccc65','#e07be0','#7986cb'];
+  const types = [...new Set(nodes.map(n=>n.type))].sort();
+  const colorOf = {}; types.forEach((t,i)=>colorOf[t]=PALETTE[i%PALETTE.length]);
+  const active = new Set(types);
+
+  // Layout state.
+  nodes.forEach(n=>{ n.x=(Math.random()-.5)*400; n.y=(Math.random()-.5)*400; n.vx=0; n.vy=0; });
+  const linkPairs = links.map(l=>[byId[l.source], byId[l.target]]).filter(p=>p[0]&&p[1]);
+
+  const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  let W=0,H=0,DPR=Math.min(2,window.devicePixelRatio||1);
+  let scale=1, ox=0, oy=0, alpha=1;
+  function resize(){ const r=cv.getBoundingClientRect(); W=r.width; H=r.height;
+    cv.width=W*DPR; cv.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); ox=W/2; oy=H/2; }
+  window.addEventListener('resize', resize); resize();
+
+  function step(){
+    if(alpha<0.01) return;
+    const vis = nodes.filter(n=>active.has(n.type));
+    // repulsion (O(n^2) is fine for reference-sized bundles)
+    for(let i=0;i<vis.length;i++){ const a=vis[i];
+      for(let j=i+1;j<vis.length;j++){ const b=vis[j];
+        let dx=a.x-b.x, dy=a.y-b.y, d2=dx*dx+dy*dy+0.01; let f=1400/d2;
+        let d=Math.sqrt(d2); let fx=dx/d*f, fy=dy/d*f;
+        a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy; } }
+    // springs
+    for(const [a,b] of linkPairs){ if(!active.has(a.type)||!active.has(b.type)) continue;
+      let dx=b.x-a.x, dy=b.y-a.y, d=Math.sqrt(dx*dx+dy*dy)+.01; let f=(d-90)*0.02;
+      let fx=dx/d*f, fy=dy/d*f; a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy; }
+    // gravity to center + integrate
+    for(const n of vis){ n.vx += -n.x*0.002; n.vy += -n.y*0.002;
+      n.vx*=0.85; n.vy*=0.85; n.x+=n.vx*alpha; n.y+=n.vy*alpha; }
+    alpha*=0.994;
+  }
+
+  let hover=null, sel=null, query='';
+  function matches(n){ if(!query) return true; const q=query.toLowerCase();
+    return (n.title||'').toLowerCase().includes(q) || (n.description||'').toLowerCase().includes(q)
+      || (n.type||'').toLowerCase().includes(q) || (n.tags||[]).join(' ').toLowerCase().includes(q); }
+  function radius(n){ return 4 + Math.min(10, Math.sqrt(n.degree||0)*2.2); }
+  function sx(n){ return ox + n.x*scale; } function sy(n){ return oy + n.y*scale; }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.lineWidth=1;
+    for(const [a,b] of linkPairs){ if(!active.has(a.type)||!active.has(b.type)) continue;
+      const dim = query && !(matches(a)&&matches(b));
+      ctx.strokeStyle = dim ? 'rgba(120,140,180,.06)' : 'rgba(120,140,180,.22)';
+      ctx.beginPath(); ctx.moveTo(sx(a),sy(a)); ctx.lineTo(sx(b),sy(b)); ctx.stroke(); }
+    for(const n of nodes){ if(!active.has(n.type)) continue;
+      const r=radius(n), on=matches(n);
+      ctx.globalAlpha = on?1:0.15;
+      ctx.beginPath(); ctx.arc(sx(n),sy(n),r,0,7); ctx.fillStyle=colorOf[n.type]; ctx.fill();
+      if(n===sel||n===hover){ ctx.lineWidth=2; ctx.strokeStyle='#fff'; ctx.stroke(); ctx.lineWidth=1; }
+      if((scale>0.8 && on && (n.degree>1)) || n===sel || n===hover){
+        ctx.globalAlpha = on?0.9:0.2; ctx.fillStyle='#e6ebf5'; ctx.font='11px sans-serif';
+        ctx.fillText(n.title.slice(0,28), sx(n)+r+3, sy(n)+3); }
+    }
+    ctx.globalAlpha=1;
+    document.getElementById('empty').style.display = nodes.some(n=>active.has(n.type)&&matches(n))?'none':'flex';
+  }
+  function frame(){ step(); draw(); requestAnimationFrame(frame); } frame();
+  function reheat(){ alpha=Math.max(alpha,0.6); }
+
+  // Interaction
+  function nodeAt(px,py){ let best=null,bd=1e9;
+    for(const n of nodes){ if(!active.has(n.type)) continue; const dx=px-sx(n),dy=py-sy(n),d=dx*dx+dy*dy;
+      const r=radius(n)+4; if(d<r*r && d<bd){ bd=d; best=n; } } return best; }
+  let dragging=false,dragNode=null,lastX,lastY,moved=false;
+  cv.addEventListener('mousedown',e=>{ const n=nodeAt(e.offsetX,e.offsetY); moved=false;
+    if(n){ dragNode=n; } else { dragging=true; } lastX=e.offsetX; lastY=e.offsetY; });
+  window.addEventListener('mousemove',e=>{ const r=cv.getBoundingClientRect();
+    const px=e.clientX-r.left, py=e.clientY-r.top;
+    if(dragNode){ dragNode.x=(px-ox)/scale; dragNode.y=(py-oy)/scale; dragNode.vx=dragNode.vy=0; reheat(); moved=true; }
+    else if(dragging){ ox+=px-lastX; oy+=py-lastY; lastX=px; lastY=py; moved=true; }
+    else { hover=nodeAt(px,py); cv.style.cursor=hover?'pointer':'default'; } });
+  window.addEventListener('mouseup',e=>{ if(dragNode&&!moved) select(dragNode); dragNode=null; dragging=false; });
+  cv.addEventListener('click',e=>{ if(moved) return; const n=nodeAt(e.offsetX,e.offsetY); select(n); });
+  cv.addEventListener('wheel',e=>{ e.preventDefault(); const f=e.deltaY<0?1.1:0.9;
+    const mx=e.offsetX,my=e.offsetY; ox=mx-(mx-ox)*f; oy=my-(my-oy)*f; scale*=f; },{passive:false});
+
+  function select(n){ sel=n; const d=document.getElementById('detail'); if(!n){ return; }
+    const outs = linkPairs.filter(p=>p[0]===n).map(p=>p[1]);
+    const ins = linkPairs.filter(p=>p[1]===n).map(p=>p[0]);
+    const li = arr => arr.length? '<ul>'+arr.map(t=>`<li><a data-id="${enc(t.id)}">${esc(t.title)}</a></li>`).join('')+'</ul>' : '<div style="color:var(--muted)">none</div>';
+    d.innerHTML = `<span class="t">${esc(n.type)}</span><h2>${esc(n.title)}</h2>`
+      + `<div>${esc(n.description||'')}</div>`
+      + (n.resource? `<div style="margin:8px 0"><a href="${esc(n.resource)}" target="_blank" rel="noopener">${esc(n.resource)}</a></div>`:'')
+      + (n.tags&&n.tags.length? `<div class="tags">${n.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>`:'')
+      + `<div style="margin-top:8px"><b>Links to</b> ${li(outs)}</div>`
+      + `<div><b>Referenced by</b> ${li(ins)}</div>`
+      + `<div style="margin-top:8px;color:var(--muted);font-size:12px">${esc(n.id)}</div>`;
+    d.querySelectorAll('a[data-id]').forEach(a=>a.onclick=()=>{ const t=byId[a.getAttribute('data-id')]; if(t){ select(t); focusNode(t);} });
+    reheat();
+  }
+  function focusNode(n){ ox=W/2 - n.x*scale; oy=H/2 - n.y*scale; }
+  function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function enc(s){ return esc(s); }
+
+  // Search + legend
+  document.getElementById('q').addEventListener('input',e=>{ query=e.target.value.trim(); });
+  const legend=document.getElementById('legend');
+  const counts={}; nodes.forEach(n=>counts[n.type]=(counts[n.type]||0)+1);
+  legend.innerHTML = types.map(t=>`<label><input type="checkbox" checked data-type="${esc(t)}">`
+    + `<span class="swatch" style="background:${colorOf[t]}"></span>${esc(t)}<span class="count">${counts[t]}</span></label>`).join('');
+  legend.querySelectorAll('input').forEach(cb=>cb.onchange=()=>{ const t=cb.getAttribute('data-type');
+    cb.checked?active.add(t):active.delete(t); reheat(); });
+})();
+</script>
+</body>
+</html>

@@ -133,8 +133,12 @@ okfgen ask my-okf "a question about your data"
 
 ## Sample bundles
 
+**Browse the sample knowledge graphs online:** https://bushans.github.io/okfgen/
+
 Ready-to-browse bundles live in [`samples/bundles/`](samples/bundles). Open any
-`graph.html` in a browser, or point the consumers at them.
+`graph.html` in a browser, or point the consumers at them. The same visualizers
+are published to GitHub Pages from [`docs/`](docs) (regenerate with
+`python samples/build_pages.py`).
 
 - Three **offline, reproducible** bundles (database, source system, docs site):
   `python samples/build_samples.py`
