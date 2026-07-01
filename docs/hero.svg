@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 280" width="860" height="280" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f1420"/>
+      <stop offset="1" stop-color="#141d33"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5b9dff"/>
+      <stop offset="1" stop-color="#57d9a3"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="860" height="280" rx="16" fill="url(#bg)"/>
+  <rect x="0.5" y="0.5" width="859" height="279" rx="16" fill="none" stroke="#2a3450"/>
+
+  <!-- wordmark + tagline -->
+  <text x="48" y="96" font-size="52" font-weight="700" fill="#e6ebf5">okf<tspan fill="url(#accent)">gen</tspan></text>
+  <text x="50" y="140" font-size="20" font-weight="600" fill="#e6ebf5">Turn any repo, database, or open-data portal</text>
+  <text x="50" y="168" font-size="20" font-weight="600" fill="#e6ebf5">into an <tspan fill="#5b9dff">AI-ready knowledge graph</tspan>.</text>
+  <text x="50" y="210" font-size="15" fill="#8b98b8">One command &#183; no LLM &#183; no API key &#183; no lock-in</text>
+
+  <!-- decorative knowledge graph -->
+  <g stroke="#2a3450" stroke-width="1.5">
+    <line x1="680" y1="70" x2="600" y2="140"/>
+    <line x1="680" y1="70" x2="770" y2="120"/>
+    <line x1="600" y1="140" x2="690" y2="200"/>
+    <line x1="770" y1="120" x2="690" y2="200"/>
+    <line x1="600" y1="140" x2="770" y2="120"/>
+    <line x1="690" y1="200" x2="780" y2="215"/>
+    <line x1="680" y1="70" x2="600" y2="60"/>
+  </g>
+  <g>
+    <circle cx="680" cy="70" r="13" fill="#5b9dff"/>
+    <circle cx="600" cy="140" r="10" fill="#57d9a3"/>
+    <circle cx="770" cy="120" r="10" fill="#f4b740"/>
+    <circle cx="690" cy="200" r="11" fill="#b58cff"/>
+    <circle cx="600" cy="60" r="7" fill="#ff7a90"/>
+    <circle cx="780" cy="215" r="7" fill="#4dd0e1"/>
+  </g>
+</svg>

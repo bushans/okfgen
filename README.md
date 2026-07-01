@@ -1,28 +1,53 @@
-# okfgen
+<!-- Once docs/demo.gif is recorded (see docs/RECORD_DEMO.md), swap the hero
+     below to: <a href="https://bushans.github.io/okfgen/"><img src="docs/demo.gif" ...></a> -->
+<p align="center">
+  <a href="https://bushans.github.io/okfgen/">
+    <img src="docs/hero.svg" alt="okfgen — turn any repo, database, or open-data portal into an AI-ready knowledge graph" width="860">
+  </a>
+</p>
 
-**A deterministic producer *and* consumer toolkit for the [Open Knowledge Format (OKF)](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md).**
+<h1 align="center">okfgen</h1>
 
-OKF is a vendor-neutral way to represent knowledge — the metadata, context, and
-curated insight around your data and systems — as **just markdown files with
-YAML frontmatter** ([blog post](https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing/)).
-A *bundle* is a directory of those files; each file is a *concept*.
+<p align="center">
+  <strong>Point it at a repo, database, docs site, or open-data portal.<br>
+  Get a portable, agent-ready knowledge graph in seconds — no LLM, no API key, no lock-in.</strong>
+</p>
 
-`okfgen` gives you a working reference implementation of **both sides** of the
-OKF ecosystem:
+<p align="center">
+  <a href="https://github.com/bushans/okfgen/actions/workflows/ci.yml"><img src="https://github.com/bushans/okfgen/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/python-3.9%2B-blue.svg" alt="Python 3.9+">
+  <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License Apache-2.0">
+  <img src="https://img.shields.io/badge/LLM-optional-success" alt="No LLM required">
+  <img src="https://img.shields.io/badge/deps-zero%20for%20core-success" alt="Zero core dependencies">
+  <a href="https://bushans.github.io/okfgen/"><img src="https://img.shields.io/badge/live%20demo-knowledge%20graphs-5b9dff" alt="Live demo"></a>
+  <a href="https://github.com/bushans/okfgen/stargazers"><img src="https://img.shields.io/github/stars/bushans/okfgen?style=social" alt="GitHub stars"></a>
+</p>
 
-- **Producers** turn a source system, database, or docs site *into* a bundle.
-- **Consumers** read a bundle back out — a viewer, a search index, an agent.
+<p align="center">
+  <a href="https://bushans.github.io/okfgen/"><strong>▶ Explore the live interactive knowledge graphs →</strong></a>
+</p>
 
-Everything is **deterministic by default**: `okfgen` extracts structured facts
-straight from the source (schemas, file structure, READMEs, dependency
-manifests, page headings). No LLM and no API key are required to run it; an
-optional `--llm` flag adds Claude-powered enrichment where you want it.
+---
+
+`okfgen` is a deterministic reference implementation of **both sides** of the
+[Open Knowledge Format (OKF)](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) —
+Google's vendor-neutral standard for representing the knowledge around your data
+and systems as **just markdown files with YAML frontmatter**
+([announcement](https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing/)).
+
+- **Producers** turn a source system, database, docs site, or live open-data portal *into* a bundle.
+- **Consumers** read a bundle back out — a viewer, a search index, a reasoning agent.
+
+It extracts **structured facts straight from the source** (schemas, file
+structure, READMEs, dependency manifests, page headings). No LLM and no API key
+are required; an optional `--llm` flag adds Claude-powered enrichment where you
+want it.
 
 ```
               PRODUCERS                              CONSUMERS
    git repo  ─┐                          ┌─  visualize  → interactive HTML graph
    database  ─┤                          ├─  search     → full-text index
-   firebase  ─┼─►  generate ─► BUNDLE ─► ┼─  ask        → reasoning agent
+  open data  ─┼─►  generate ─► BUNDLE ─► ┼─  ask        → reasoning agent
    local dir ─┤        │       (.md +    └─  validate   → conformance check
    web docs  ─┘        ▼      frontmatter)
                     enrich  (pass 2: join paths, backlinks, citations)
@@ -30,10 +55,64 @@ optional `--llm` flag adds Claude-powered enrichment where you want it.
 
 ---
 
+## Quickstart (30 seconds)
+
+Zero-install with [`uv`](https://docs.astral.sh/uv/) — turn *this* directory into
+a knowledge graph and open it:
+
+```bash
+uvx --from git+https://github.com/bushans/okfgen okfgen generate . -o my-okf
+uvx --from git+https://github.com/bushans/okfgen okfgen visualize my-okf -o my-okf/graph.html
+# then open my-okf/graph.html
+```
+
+Or with pip:
+
+```bash
+pip install git+https://github.com/bushans/okfgen.git   # PyPI release coming soon
+okfgen generate . -o my-okf && okfgen visualize my-okf -o my-okf/graph.html
+```
+
+> 🎥 **Demo GIF coming soon** (see [docs/RECORD_DEMO.md](docs/RECORD_DEMO.md)) —
+> meanwhile the [live gallery](https://bushans.github.io/okfgen/) is fully interactive.
+
+---
+
+## Why okfgen
+
+- **One command, any source → a knowledge graph.** Code, databases, docs, and
+  live open-data portals — the same tool, the same output.
+- **Deterministic, offline, no API key.** Reproducible facts, not LLM
+  hallucinations. Runs in air-gapped environments. The LLM is strictly opt-in.
+- **Open format, zero lock-in.** Output is plain markdown + YAML you can read,
+  diff in git, and grep — not a proprietary database.
+- **Agent-ready.** Search, a citation-backed reasoning agent, and a portable
+  JSON index make bundles first-class context for RAG and AI agents.
+- **A viewer you can email.** The visualizer is a single self-contained HTML
+  file — no backend, no CDN, data never leaves the page.
+- **Reference implementation of an open standard.** Tracks the OKF v0.1 spec;
+  every bundle it emits passes its own conformance validator.
+
+### How it compares
+
+| | **okfgen** | Data catalogs<br>(DataHub / Amundsen) | LLM auto-doc tools | Hand-written wiki |
+|---|:---:|:---:|:---:|:---:|
+| Runs with no server/DB to deploy | ✅ | ❌ | ⚠️ | ✅ |
+| No API key / no LLM required | ✅ | ✅ | ❌ | ✅ |
+| Deterministic & reproducible | ✅ | ✅ | ❌ | ✅ |
+| Open, plain-markdown output (no lock-in) | ✅ | ❌ | ⚠️ | ✅ |
+| Code **and** DB **and** docs **and** live open data | ✅ | ⚠️ data only | ⚠️ | manual |
+| Self-contained interactive graph viewer | ✅ | ⚠️ needs server | ❌ | ❌ |
+| Agent-ready (search + reasoning over bundle) | ✅ | ⚠️ | ✅ | ❌ |
+| Time to first result | **seconds** | hours–days | minutes | ∞ |
+
+---
+
 ## Install
 
 ```bash
-pip install -e .            # core: git, local, web, schema sources (zero deps)
+pip install git+https://github.com/bushans/okfgen.git   # core: git, local, web, schema (zero deps)
+# from a clone, for development:
 pip install -e '.[all]'     # add BigQuery, Firebase, PyYAML
 ```
 
@@ -107,27 +186,6 @@ okfgen validate ./my-okf --strict
 
 `okfgen ask` shows its work — the retrieved concepts, the links it traversed, and
 the citations behind the answer — so the reasoning is auditable.
-
----
-
-## Try it against your own data (2 minutes)
-
-```bash
-pip install -e .
-
-# 1. Produce a bundle from something you have:
-okfgen generate ./path/to/your/repo -o my-okf
-#    ...or a database schema (no cloud needed): see samples/recipes/acme_sales.schema.json
-#    ...or BigQuery: pip install -e '.[bigquery]' && okfgen generate bq:your-project
-
-# 2. Enrich it (adds join paths + backlinks):
-okfgen enrich my-okf
-
-# 3. Explore it three ways:
-okfgen visualize my-okf -o my-okf/graph.html   # open graph.html in a browser
-okfgen search my-okf "your search terms"
-okfgen ask my-okf "a question about your data"
-```
 
 ---
 
