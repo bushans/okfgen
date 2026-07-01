@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "okfgen: install (editable, dev+all)",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "pip", "install", "-e", ".[dev,all]"],
+      "problemMatcher": []
+    },
+    {
+      "label": "okfgen: run tests",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "pytest", "-q"],
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "okfgen: generate acme sample",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "okfgen.cli", "generate",
+               "samples/recipes/acme_sales.schema.json",
+               "-o", "out/acme", "--overwrite"],
+      "problemMatcher": []
+    },
+    {
+      "label": "okfgen: visualize acme sample",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "okfgen.cli", "visualize", "out/acme",
+               "-o", "out/acme/graph.html"],
+      "dependsOn": "okfgen: generate acme sample",
+      "problemMatcher": []
+    },
+    {
+      "label": "okfgen: serve docs site",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "http.server", "8100", "--directory", "docs"],
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

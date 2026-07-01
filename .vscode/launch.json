@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "okfgen: generate acme (schema)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "okfgen.cli",
+      "args": ["generate", "samples/recipes/acme_sales.schema.json",
+               "-o", "out/acme", "--overwrite"],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "okfgen: ask out/acme",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "okfgen.cli",
+      "args": ["ask", "out/acme", "how do I join orders to customers?"],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "okfgen: validate out/acme",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "okfgen.cli",
+      "args": ["validate", "out/acme"],
+      "console": "integratedTerminal"
+    }
+  ]
+}

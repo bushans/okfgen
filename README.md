@@ -188,6 +188,10 @@ pip install -e '.[dev]'
 pytest
 ```
 
+New to the project? [**TESTING.md**](TESTING.md) is a step-by-step VS Code
+walkthrough: environment setup, running the test suite, and driving every
+producer/consumer command locally.
+
 ## License
 
 Apache-2.0.

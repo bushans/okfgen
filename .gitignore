@@ -22,11 +22,14 @@ env/
 .claude/settings.local.json
 
 # Editor / OS
+# Note: .vscode/ is intentionally committed (shared interpreter, tasks, launch,
+# recommended extensions). Ignore only personal, non-shared VS Code state.
 .idea/
-.vscode/
+.vscode/*.local.json
 .DS_Store
 Thumbs.db
 
 # okfgen scratch output (generated bundles land in *-okf/ by default;
 # the curated ones under samples/bundles/ are committed intentionally)
 /*-okf/
+/out/
