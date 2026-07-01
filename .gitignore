@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# Test / tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Local, user-specific Claude Code settings (keep launch.json, ignore local overrides)
+.claude/settings.local.json
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# okfgen scratch output (generated bundles land in *-okf/ by default;
+# the curated ones under samples/bundles/ are committed intentionally)
+/*-okf/

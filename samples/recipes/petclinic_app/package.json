@@ -1,0 +1,17 @@
+{
+  "name": "petclinic-api",
+  "version": "1.2.0",
+  "description": "Veterinary clinic REST API (okfgen sample fixture).",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^4.19.0",
+    "pino": "^9.0.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.0.0"
+  }
+}
