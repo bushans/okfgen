@@ -192,6 +192,99 @@ comment in the first hour.
 
 ---
 
+## 5. Blog post (publish on dev.to — this is your canonical URL)
+
+Paste-ready below. The whole block is fenced with tildes (`~~~`) so the inner
+```` ``` ```` code blocks copy through intact. The front-matter is dev.to format:
+leave `published: false` until you've reviewed it, add a `cover_image`, and set
+`canonical_url` only if you publish the original somewhere else first.
+
+~~~markdown
+---
+title: Make your systems agent-readable in one command
+published: false
+description: A deterministic tool that turns your repos, databases, and docs into portable knowledge graphs AI agents can reason over.
+tags: opensource, python, ai, showdev
+cover_image:
+canonical_url:
+---
+
+## The context problem
+
+Everyone is wiring AI agents into their stack. But an agent is only as smart as
+the context it's given, and that context — table schemas, join logic, API docs,
+the "why" behind a system — is fragmented across databases, wikis, and
+codebases. Most attempts to fix this either lock your knowledge in a proprietary
+catalog or ask an LLM to hallucinate documentation you can't trust.
+
+## A simpler idea: knowledge as files
+
+Google recently proposed the [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
+(OKF): represent knowledge as *just markdown files with YAML frontmatter*. No
+schema registry, no SDK, no central authority. A bundle is a directory of
+"concepts"; each file is readable by humans, parseable by agents, and diffable
+in git.
+
+I liked it enough to build **okfgen** — a reference implementation of both sides
+of that ecosystem.
+
+## Deterministic by default
+
+okfgen's one opinion: it extracts *facts*, not guesses. Point it at a database
+and it reads the actual column schemas. Point it at a repo and it maps the real
+module structure and dependencies. No LLM, no API key — so the output is
+reproducible, auditable, and runs in an air-gapped environment. (An optional
+`--llm` flag adds Claude-written polish where you want it, but nothing needs it.)
+
+## Producers → bundle → consumers
+
+The *producers* turn a source into a bundle:
+
+```bash
+uvx okfgen generate ./my-repo
+uvx okfgen generate schema:./warehouse.json
+uvx okfgen generate ckan:https://data.gov/dataset/...
+```
+
+Then an *enrichment* pass infers join paths between tables from foreign-key
+naming (`customer_id → customers`) and wires backlinks, so the knowledge becomes
+a navigable graph.
+
+The *consumers* read any bundle back — regardless of who produced it:
+
+- **visualize** → a self-contained interactive graph (one HTML file, no backend, data never leaves the page)
+- **search** → a full-text index
+- **ask** → a reasoning agent that answers with citations *and shows which concepts it traversed*
+- **validate** → an OKF conformance check
+
+## In your agent, via MCP
+
+okfgen ships an MCP server, so Claude, Cursor, and any MCP client can generate
+and reason over bundles directly. An agent can now say "catalog this database
+and tell me how orders relate to customers" and get a grounded, cited answer.
+
+## It works on real data today
+
+The same adapters that read a local schema also read live open-data portals —
+CKAN (data.gov, Toronto, thousands of city/gov portals) and Socrata (NYC,
+Seattle, Chicago). The live demo gallery is built from exactly these:
+[browse the interactive graphs →](https://bushans.github.io/okfgen/)
+
+## Try it
+
+```bash
+uvx okfgen generate .
+```
+
+It's open source (Apache-2.0), on PyPI, and early — the spec itself is a v0.1
+draft. If you try it, I'd genuinely love to hear what source you pointed it at
+and where it fell short.
+
+⭐ [github.com/bushans/okfgen](https://github.com/bushans/okfgen)
+~~~
+
+---
+
 ## Cross-posting without hurting SEO — worked example
 
 Posting the same article in several places normally triggers Google's
