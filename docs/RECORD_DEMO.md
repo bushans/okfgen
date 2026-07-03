@@ -1,8 +1,21 @@
-# Recording the hero demo GIF
+# The hero demo GIF
 
-The README references `docs/demo.gif`. Until it exists, the README shows the
-static `docs/hero.svg` banner and links to the live gallery. To record the real
-thing (~15–20s, shows the "wow"):
+The README hero is `docs/demo.gif`.
+
+## Option A — generate it (zero effort, no screen recorder)
+
+```bash
+python scripts/make_demo_gif.py     # -> docs/demo.gif
+```
+
+This renders the animated terminal + settling knowledge graph entirely with
+Pillow — deterministic, offline, free. It's what currently ships as the hero.
+Tweak the transcript or nodes in `scripts/make_demo_gif.py` and re-run.
+
+## Option B — record the real thing (more authentic)
+
+A screen capture of the actual interactive graph is even more compelling
+(~15–20s):
 
 **Storyboard**
 1. `okfgen generate ./samples/recipes/acme_sales.schema.json -o out/acme`

@@ -1,8 +1,6 @@
-<!-- Once docs/demo.gif is recorded (see docs/RECORD_DEMO.md), swap the hero
-     below to: <a href="https://bushans.github.io/okfgen/"><img src="docs/demo.gif" ...></a> -->
 <p align="center">
   <a href="https://bushans.github.io/okfgen/">
-    <img src="docs/hero.svg" alt="okfgen — turn any repo, database, or open-data portal into an AI-ready knowledge graph" width="860">
+    <img src="docs/demo.gif" alt="okfgen — turn any repo, database, or open-data portal into an AI-ready knowledge graph" width="860">
   </a>
 </p>
 
