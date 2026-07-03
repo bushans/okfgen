@@ -1,0 +1,53 @@
+name: OKF spec drift watch
+
+# Weekly check that the pinned OKF spec still matches Google's upstream SPEC.md.
+# On drift, opens (or updates) a tracking issue so okfgen stays a faithful
+# reference implementation.
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"   # Mondays 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check for spec drift
+        id: drift
+        run: |
+          set +e
+          python scripts/check_spec_drift.py > drift.txt 2>&1
+          status=$?
+          set -e
+          cat drift.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+      - name: Open / update tracking issue on drift
+        if: steps.drift.outputs.status == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="OKF spec drift detected — review conformance"
+          BODY_FILE=drift.txt
+          EXISTING=$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body-file "$BODY_FILE"
+            echo "Updated existing issue #$EXISTING"
+          else
+            gh issue create --title "$TITLE" --body-file "$BODY_FILE" --label "spec-drift" || \
+            gh issue create --title "$TITLE" --body-file "$BODY_FILE"
+          fi
+
+      - name: Fail the run if drift was detected
+        if: steps.drift.outputs.status == '1'
+        run: exit 1

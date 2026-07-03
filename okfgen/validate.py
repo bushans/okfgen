@@ -17,9 +17,16 @@ from typing import List
 from urllib.parse import urlparse
 
 from .model import RESERVED_FILENAMES
-from . import yamlfm
+from . import OKF_VERSION, yamlfm
 
 RECOMMENDED_FIELDS = ("title", "description", "resource", "tags", "timestamp")
+
+
+def _version_tuple(v: str):
+    try:
+        return tuple(int(p) for p in str(v).strip().split("."))
+    except ValueError:
+        return None
 
 
 @dataclass
@@ -73,6 +80,23 @@ def validate_bundle(bundle_dir: str) -> ValidationResult:
         result.issues.append(Issue("warning", str(root), "No markdown files found in bundle."))
 
     all_rel = {p.relative_to(root).as_posix() for p in md_files}
+
+    # Version-compat: warn (never fail) if the bundle targets a newer OKF than
+    # this okfgen supports — the reader should still tolerate it per the spec.
+    root_index = root / "index.md"
+    if root_index.is_file():
+        try:
+            fm_raw, _ = yamlfm.split_frontmatter(root_index.read_text(encoding="utf-8"))
+            declared = str(yamlfm.parse(fm_raw).get("okf_version", "")).strip() if fm_raw else ""
+        except (OSError, UnicodeDecodeError):
+            declared = ""
+        dt, st = _version_tuple(declared), _version_tuple(OKF_VERSION)
+        if dt and st and dt > st:
+            result.issues.append(Issue(
+                "warning", "index.md",
+                f"Bundle targets OKF {declared}, but okfgen supports up to "
+                f"{OKF_VERSION}; some newer features may not be understood.",
+            ))
 
     for path in md_files:
         rel = path.relative_to(root).as_posix()
