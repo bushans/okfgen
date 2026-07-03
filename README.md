@@ -280,6 +280,12 @@ New to the project? [**TESTING.md**](TESTING.md) is a step-by-step VS Code
 walkthrough: environment setup, running the test suite, and driving every
 producer/consumer command locally.
 
+## Contributing
+
+Contributions are welcome — new source adapters especially. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for the dev setup and a guide to adding a
+producer in a few lines.
+
 ## License
 
-Apache-2.0.
+[Apache-2.0](LICENSE).
