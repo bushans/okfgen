@@ -72,8 +72,8 @@ pip install okfgen
 okfgen generate . -o my-okf && okfgen visualize my-okf -o my-okf/graph.html
 ```
 
-> 🎥 **Demo GIF coming soon** (see [docs/RECORD_DEMO.md](docs/RECORD_DEMO.md)) —
-> meanwhile the [live gallery](https://bushans.github.io/okfgen/) is fully interactive.
+> 🎥 See the [demo above](docs/demo.gif), or explore the
+> [live gallery](https://bushans.github.io/okfgen/) — every graph is fully interactive.
 
 ---
 
