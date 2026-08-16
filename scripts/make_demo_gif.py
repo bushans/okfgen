@@ -46,6 +46,7 @@ def _font(cands, size):
 MONO = _font(_MONO, 17)
 MONO_S = _font(_MONO, 14)
 SANS = _font(_SANS, 15)
+SANS_S = _font(_SANS, 13)
 
 # Terminal transcript: (text, color). Prompt lines are "typed"; others appear.
 PROMPT = (GREEN, "$ ")
@@ -59,7 +60,7 @@ LINES = [
 ]
 
 # Graph nodes in the lower panel (relative positions + label + palette idx).
-GX, GY, GW, GH = 20, 250, 820, 230
+GX, GY, GW, GH = 20, 246, 820, 202
 NODES = [
     (0.50, 0.28, "overview", 0, 14),
     (0.24, 0.55, "dependencies", 1, 10),
@@ -121,7 +122,7 @@ def render(n_lines, partial, graph_t, caret):
 
     # Graph panel
     gbox = (GX, GY, GX + GW, GY + GH)
-    _panel(d, gbox, title="graph.html — interactive knowledge graph")
+    _panel(d, gbox, title="graph.html — interactive knowledge graph (concepts + links)")
     if graph_t > 0:
         cx, cy = GX + GW / 2, GY + GH / 2 + 6
         ease = graph_t * graph_t * (3 - 2 * graph_t)  # smoothstep
@@ -138,6 +139,15 @@ def render(n_lines, partial, graph_t, caret):
             d.ellipse([nx - r, ny - r, nx + r, ny + r], fill=PALETTE[ci])
             if graph_t > 0.75:
                 d.text((nx + r + 5, ny - 8), label, font=MONO_S, fill=FG)
+
+    # Provenance footer (OKF v0.2) — appears once the graph has settled.
+    if graph_t > 0.9:
+        fy = GY + GH + 10
+        d.text((GX + 2, fy), "OKF v0.2 provenance:", font=SANS_S, fill=GREEN)
+        w = d.textlength("OKF v0.2 provenance:", font=SANS_S)
+        d.text((GX + 2 + w + 8, fy),
+               "every concept carries  generated { by, at }  +  sources "
+               "( author · usage_count · freshness )", font=SANS_S, fill=MUTED)
     return img
 
 
