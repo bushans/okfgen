@@ -6,7 +6,9 @@ resource: "https://console.cloud.google.com/bigquery?project=acme"
 tags:
   - database
   - catalog
-timestamp: "2026-07-01T00:00:00+00:00"
+generated:
+  by: okfgen/0.1.1
+  at: "2026-07-01T00:00:00+00:00"
 ---
 
 # Schema

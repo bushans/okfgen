@@ -8,13 +8,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from . import OKF_VERSION
+from . import OKF_VERSION, __version__
 from . import yamlfm
 
 RESERVED_FILENAMES = {"index.md", "log.md"}
 
-# Conventional body headings that carry meaning in OKF (SPEC.md).
-CONVENTIONAL_HEADINGS = ("Schema", "Examples", "Citations")
+# Conventional body headings that carry meaning in OKF v0.2 (SPEC.md §4.2).
+# `# Citations` is retained for legacy v0.1 bundles; v0.2 moves provenance to the
+# `sources` frontmatter field.
+CONVENTIONAL_HEADINGS = ("Schema", "Examples", "Computation", "Citations")
+
+# Actor string for `generated.by`, per the OKF v0.2 actor convention (§7):
+# `<producer>/<version>`.
+PRODUCER = f"okfgen/{__version__}"
 
 
 def utcnow_iso() -> str:
@@ -47,7 +53,7 @@ class Concept:
     description: Optional[str] = None
     resource: Optional[str] = None
     tags: List[str] = field(default_factory=list)
-    timestamp: Optional[str] = None
+    timestamp: Optional[str] = None  # ISO time of last content change (-> generated.at)
     body: str = ""
     extra: Dict[str, Any] = field(default_factory=dict)
 
@@ -61,7 +67,9 @@ class Concept:
             fm["resource"] = self.resource
         if self.tags:
             fm["tags"] = list(self.tags)
-        fm["timestamp"] = self.timestamp or utcnow_iso()
+        # OKF v0.2: last content change is recorded as `generated: { by, at }`
+        # (§5.2), which supersedes the v0.1 `timestamp` field (§13.1).
+        fm["generated"] = {"by": PRODUCER, "at": self.timestamp or utcnow_iso()}
         for k, v in self.extra.items():
             if k not in fm:
                 fm[k] = v

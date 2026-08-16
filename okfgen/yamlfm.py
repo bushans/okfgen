@@ -29,6 +29,7 @@ _PREFERRED_ORDER = [
     "description",
     "resource",
     "tags",
+    "generated",
     "timestamp",
 ]
 

@@ -93,7 +93,7 @@ def ask_bundle(bundle_dir: str, question: str, top_k: int = 3) -> str:
 
 
 def validate_bundle_tool(bundle_dir: str) -> str:
-    """Validate a bundle for OKF v0.1 conformance. Returns errors + warnings."""
+    """Validate a bundle for OKF v0.2 conformance. Returns errors + warnings."""
     from .validate import validate_bundle
     result = validate_bundle(bundle_dir)
     lines = [

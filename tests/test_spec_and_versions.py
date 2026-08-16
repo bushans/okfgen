@@ -36,6 +36,7 @@ def test_future_okf_version_warns_but_stays_conformant(tmp_path):
 
 
 def test_current_okf_version_no_version_warning(tmp_path):
-    out = _write_bundle_with_version(tmp_path, "0.1")
+    from okfgen import OKF_VERSION
+    out = _write_bundle_with_version(tmp_path, OKF_VERSION)
     result = validate_bundle(str(out))
     assert not any("targets OKF" in w.message for w in result.warnings)

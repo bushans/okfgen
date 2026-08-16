@@ -7,7 +7,9 @@ tags:
   - open-data
   - resource
   - geojson
-timestamp: "2026-07-01T09:12:31+00:00"
+generated:
+  by: okfgen/0.1.1
+  at: "2026-08-16T02:32:35+00:00"
 format: GeoJSON
 ---
 
@@ -20,18 +22,17 @@ format: GeoJSON
 | `siteName` | text |
 | `collectionDate` | date |
 | `eColi` | int4 |
-| `comments` | text |
 | `geometry` | text |
 
 # Examples
 
-| beachId | beachName | siteName | collectionDate | eColi | comments | geometry |
-|---|---|---|---|---|---|---|
-| 1 | Marie Curtis Park East Beach | 29W | 2025-09-08 | None | None | {"type": "Point", "coordinates": [-79.53 |
-| 1 | Marie Curtis Park East Beach | 33W | 2025-09-08 | None | None | {"type": "Point", "coordinates": [-79.54 |
-| 1 | Marie Curtis Park East Beach | 32W | 2025-09-08 | None | None | {"type": "Point", "coordinates": [-79.54 |
+| beachId | beachName | siteName | collectionDate | eColi | geometry |
+|---|---|---|---|---|---|
+| 1 | Marie Curtis Park East Beach | 29W | 2026-08-14 | 240 | {"type": "Point", "coordinates": [-79.53 |
+| 1 | Marie Curtis Park East Beach | 33W | 2026-08-14 | 20 | {"type": "Point", "coordinates": [-79.54 |
+| 1 | Marie Curtis Park East Beach | 32W | 2026-08-14 | 30 | {"type": "Point", "coordinates": [-79.54 |
 
-_Total rows: 108,284_
+_Total rows: 101,182_
 
 # Related
 

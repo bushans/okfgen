@@ -1,6 +1,6 @@
-"""OKF v0.1 conformance validator.
+"""OKF v0.2 conformance validator.
 
-Implements the SPEC.md conformance rules:
+Implements the SPEC.md §11 conformance rules (unchanged in substance from v0.1):
   * every non-reserved `.md` file has parseable YAML frontmatter,
   * every frontmatter block has a non-empty `type` field.
 
@@ -19,7 +19,9 @@ from urllib.parse import urlparse
 from .model import RESERVED_FILENAMES
 from . import OKF_VERSION, yamlfm
 
-RECOMMENDED_FIELDS = ("title", "description", "resource", "tags", "timestamp")
+# v0.2 recommends title/description/resource/tags (§13.2); the last-change time
+# is now the optional `generated` family, not the retired `timestamp`.
+RECOMMENDED_FIELDS = ("title", "description", "resource", "tags")
 
 
 def _version_tuple(v: str):

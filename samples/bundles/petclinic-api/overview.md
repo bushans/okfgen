@@ -5,7 +5,9 @@ description: PetClinic API
 resource: samples/recipes/petclinic_app
 tags:
   - JavaScript
-timestamp: "2026-07-01T00:00:00+00:00"
+generated:
+  by: okfgen/0.1.1
+  at: "2026-07-01T00:00:00+00:00"
 ---
 
 # PetClinic API

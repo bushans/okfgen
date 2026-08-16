@@ -8,7 +8,9 @@ tags:
   - ckan0.cf.opendata.inter.prod-toronto.ca
   - beaches
   - water quality
-timestamp: "2026-07-01T09:12:31+00:00"
+generated:
+  by: okfgen/0.1.1
+  at: "2026-08-16T02:32:35+00:00"
 ---
 
 The Beach Water Sampling Program for the City of Toronto is a co-operative effort between Toronto Public Health, Toronto Water, the Marine Police Unit, Parks and Recreation Department. It is implemented in accordance with the requirements of the Ministry of Health Beach Management Protocol (January 01, 1998) in order to reduce the incidence of water-borne illness in the population.
@@ -37,5 +39,5 @@ Resources in this dataset:
 
 - **Publisher:** City of Toronto
 - **License:** License not specified
-- **Last modified:** 2026-04-15T21:06:39.881974
+- **Last modified:** 2026-08-15T21:07:45.515337
 - **Resources:** 9

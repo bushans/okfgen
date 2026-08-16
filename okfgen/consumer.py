@@ -139,6 +139,11 @@ def load_bundle(bundle_dir: str) -> LoadedBundle:
         if isinstance(tags, str):
             tags = [tags]
 
+        # OKF v0.2 records last-change as `generated.at`; fall back to the
+        # legacy v0.1 `timestamp` field (§13.1).
+        gen = fm.get("generated")
+        ts = (gen.get("at") if isinstance(gen, dict) else None) or fm.get("timestamp", "")
+
         concepts.append(LoadedConcept(
             path=rel,
             type=ctype,
@@ -146,7 +151,7 @@ def load_bundle(bundle_dir: str) -> LoadedBundle:
             description=str(fm.get("description", "")),
             resource=str(fm.get("resource", "")),
             tags=[str(t) for t in tags],
-            timestamp=str(fm.get("timestamp", "")),
+            timestamp=str(ts),
             frontmatter=fm,
             body=body.strip(),
             links=list(dict.fromkeys(internal)),

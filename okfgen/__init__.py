@@ -7,7 +7,7 @@ markdown files with YAML frontmatter.
 See https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md
 """
 
-__version__ = "0.1.0"
-OKF_VERSION = "0.1"
+__version__ = "0.1.1"
+OKF_VERSION = "0.2"
 
 __all__ = ["__version__", "OKF_VERSION"]

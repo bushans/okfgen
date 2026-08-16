@@ -64,8 +64,12 @@ def test_write_bundle_creates_index_and_concept(tmp_path):
     assert (out / "index.md").exists()
     assert (out / "overview.md").exists()
     index = (out / "index.md").read_text(encoding="utf-8")
-    assert 'okf_version: "0.1"' in index or "okf_version: 0.1" in index
+    assert 'okf_version: "0.2"' in index or "okf_version: 0.2" in index
     assert "[Demo](/overview.md)" in index
+    # OKF v0.2: concepts record `generated: { by, at }`, not a bare `timestamp`.
+    overview = (out / "overview.md").read_text(encoding="utf-8")
+    assert "generated:" in overview and "by: okfgen/" in overview
+    assert "\ntimestamp:" not in overview
 
 
 def test_write_bundle_refuses_nonempty_without_overwrite(tmp_path):

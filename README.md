@@ -89,7 +89,7 @@ okfgen generate . -o my-okf && okfgen visualize my-okf -o my-okf/graph.html
   JSON index make bundles first-class context for RAG and AI agents.
 - **A viewer you can email.** The visualizer is a single self-contained HTML
   file — no backend, no CDN, data never leaves the page.
-- **Reference implementation of an open standard.** Tracks the OKF v0.1 spec;
+- **Reference implementation of an open standard.** Tracks the OKF v0.2 spec;
   every bundle it emits passes its own conformance validator.
 
 ### How it compares
@@ -239,7 +239,7 @@ See [samples/README.md](samples/README.md) for details.
 
 ```
 <name>-okf/
-├── index.md            # root listing + okf_version: "0.1"
+├── index.md            # root listing + okf_version: "0.2"
 ├── log.md              # generation / enrichment log (ISO-dated)
 ├── overview.md         # the root "Project" / "Data Project" concept
 ├── dependencies.md     # parsed manifests (git/local)
@@ -252,8 +252,9 @@ See [samples/README.md](samples/README.md) for details.
 ```
 
 Every concept carries the required `type` frontmatter field plus recommended
-`title`/`description`/`resource`/`tags`/`timestamp`, and bodies use the
-conventional OKF `# Schema`, `# Examples`, `# Citations`, `# Joins` headings.
+`title`/`description`/`resource`/`tags`, and an OKF v0.2 `generated: { by, at }`
+provenance stamp. Bodies use the conventional OKF `# Schema`, `# Examples`,
+`# Computation`, `# Joins` headings.
 
 ---
 

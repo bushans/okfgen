@@ -4,7 +4,9 @@ title: PetClinic API — Dependencies
 description: Declared third-party dependencies parsed from manifest files.
 tags:
   - dependencies
-timestamp: "2026-07-01T00:00:00+00:00"
+generated:
+  by: okfgen/0.1.1
+  at: "2026-07-01T00:00:00+00:00"
 ---
 
 # Schema
