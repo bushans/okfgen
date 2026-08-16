@@ -117,6 +117,25 @@ def visualize_bundle(bundle_dir: str, out_path: Optional[str] = None) -> str:
     return f"Wrote interactive graph to {out}"
 
 
+def make_skill(source: str, out_dir: Optional[str] = None,
+               name: Optional[str] = None) -> str:
+    """Turn a source or bundle into an Agent Skill folder (SKILL.md + reference/).
+
+    `source` is any okfgen source or an existing bundle directory. Returns the
+    skill path and the generated `name`/`description`.
+    """
+    from .skill import build_skill
+    from .model import slugify
+    out = out_dir or f"{slugify(name or 'okf')}-skill"
+    try:
+        result = build_skill(source, out, name=name, overwrite=True)
+    except (FileNotFoundError, ValueError, SourceError) as exc:
+        return f"error: {exc}"
+    return (f"Wrote skill '{result.name}' to {result.out_dir} "
+            f"({result.concept_count} concept(s) as reference).\n"
+            f"description: {result.description}")
+
+
 def list_source_types() -> str:
     """List the source types okfgen can ingest."""
     return "okfgen source types: " + ", ".join(sorted(REGISTRY))
@@ -141,6 +160,7 @@ def create_server():
     server.tool(name="okfgen_ask")(ask_bundle)
     server.tool(name="okfgen_validate")(validate_bundle_tool)
     server.tool(name="okfgen_visualize")(visualize_bundle)
+    server.tool(name="okfgen_skill")(make_skill)
     server.tool(name="okfgen_list_source_types")(list_source_types)
     return server
 

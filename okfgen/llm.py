@@ -59,6 +59,19 @@ def synthesize_answer(question: str, context: str) -> Optional[str]:
     return _complete(system, user, max_tokens=700)
 
 
+def write_skill_description(title: str, summary: str, keywords: List[str]) -> Optional[str]:
+    """Write a triggering `description` for an Agent Skill (enables good routing)."""
+    system = (
+        "You write the `description` field for an Agent Skill. It must state what "
+        "knowledge the skill provides AND when to use it (trigger conditions and "
+        "keywords), in 1-2 sentences, under 500 characters. No markdown, no preamble."
+    )
+    user = (f"Skill subject: {title}\nSummary: {summary}\n"
+            f"Key terms: {', '.join(keywords)}")
+    result = _complete(system, user, max_tokens=180)
+    return result[:900] if result else None
+
+
 def enrich_description(title: str, ctype: str, body: str, doc_context: str = "") -> Optional[str]:
     """Write a richer one-sentence description for a concept (enrichment agent)."""
     system = (

@@ -90,6 +90,24 @@ def _add_ask_parser(sub: argparse._SubParsersAction) -> None:
     p.set_defaults(func=_cmd_ask)
 
 
+def _add_skill_parser(sub: argparse._SubParsersAction) -> None:
+    p = sub.add_parser(
+        "skill",
+        help="Consumer: turn a source or bundle into an Agent Skill folder (SKILL.md).",
+        description="Generate a SKILL.md (name + triggering description + instructions) "
+                    "with the OKF bundle alongside as reference files.",
+    )
+    p.add_argument("input", help="A source (git URL, path, schema:, ckan:, …) or an existing bundle dir.")
+    p.add_argument("-o", "--out", default=None, help="Output skill directory (default: <name>-skill).")
+    p.add_argument("--name", default=None, help="Override the skill name.")
+    p.add_argument("-t", "--type", dest="kind", choices=sorted(REGISTRY.keys()), default=None,
+                   help="Force the source type (ignored when input is already a bundle).")
+    p.add_argument("--llm", action="store_true",
+                   help="Sharpen the skill description via the Claude API.")
+    p.add_argument("--overwrite", action="store_true", help="Overwrite a non-empty output dir.")
+    p.set_defaults(func=_cmd_skill)
+
+
 def _add_validate_parser(sub: argparse._SubParsersAction) -> None:
     p = sub.add_parser(
         "validate",
@@ -228,6 +246,25 @@ def _cmd_ask(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_skill(args: argparse.Namespace) -> int:
+    from .skill import build_skill
+    from .model import slugify
+    out = args.out or f"{slugify(args.name or Path(args.input).name)}-skill"
+    try:
+        result = build_skill(
+            args.input, out, name=args.name, kind=args.kind,
+            use_llm=args.llm, overwrite=args.overwrite,
+        )
+    except (FileExistsError, FileNotFoundError, ValueError, SourceError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    print(f"[okfgen] wrote skill '{result.name}' to {result.out_dir} "
+          f"({result.concept_count} concept(s) as reference).", file=sys.stderr)
+    print(f"[okfgen] description: {result.description}", file=sys.stderr)
+    print(str(result.out_dir))
+    return 0
+
+
 def _cmd_validate(args: argparse.Namespace) -> int:
     result = validate_bundle(args.bundle)
     _print_validation(result, quiet=args.quiet)
@@ -250,6 +287,7 @@ def build_parser() -> argparse.ArgumentParser:
     _add_visualize_parser(sub)
     _add_search_parser(sub)
     _add_ask_parser(sub)
+    _add_skill_parser(sub)
     _add_validate_parser(sub)
     return parser
 

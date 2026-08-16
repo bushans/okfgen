@@ -99,6 +99,7 @@ Debug the CLI itself via **Run and Debug** (F5) using
 | `okfgen search <bundle> <q>` | search-index consumer |
 | `okfgen ask <bundle> <q>` | reasoning-agent consumer |
 | `okfgen visualize <bundle>` | HTML graph consumer |
+| `okfgen skill <src\|bundle>` | generate an Agent Skill (SKILL.md + reference files) |
 | `okfgen validate <bundle>` | OKF conformance check |
 
 Add `-h` to any command for its full options.

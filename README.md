@@ -185,10 +185,19 @@ okfgen ask ./my-okf "..." --llm                 # phrase answer via Claude
 
 # Conformance validation
 okfgen validate ./my-okf --strict
+
+# Agent Skill: turn a source (or bundle) into a SKILL.md + reference files
+okfgen skill ./my-repo -o my-skill              # from any source
+okfgen skill ./my-okf  -o my-skill --llm        # from a bundle; sharpen the description
 ```
 
 `okfgen ask` shows its work — the retrieved concepts, the links it traversed, and
 the citations behind the answer — so the reasoning is auditable.
+
+`okfgen skill` produces an [Agent Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)
+folder: a `SKILL.md` (with a triggering `description` and lean instructions) plus
+the OKF bundle alongside as reference files — progressive disclosure, so an agent
+loads detail only when it needs it.
 
 ---
 
@@ -215,7 +224,7 @@ settings):
 ```
 
 Exposed tools: `okfgen_generate`, `okfgen_search`, `okfgen_ask`,
-`okfgen_validate`, `okfgen_visualize`, `okfgen_list_source_types`. Now an agent
+`okfgen_validate`, `okfgen_visualize`, `okfgen_skill`, `okfgen_list_source_types`. Now an agent
 can say *"catalog this database and tell me how orders join to customers"* and
 get grounded, cited answers.
 

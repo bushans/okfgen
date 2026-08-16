@@ -24,6 +24,7 @@ FRONTMATTER_DELIM = "---"
 
 # Ordering used when emitting concept frontmatter so bundles diff cleanly.
 _PREFERRED_ORDER = [
+    "name",  # Agent Skill frontmatter leads with name
     "type",
     "title",
     "description",

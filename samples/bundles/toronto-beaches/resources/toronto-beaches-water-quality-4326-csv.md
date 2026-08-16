@@ -12,8 +12,8 @@ sources:
     title: toronto-beaches-water-quality - 4326.csv
     last_modified: 2026-08-15
 generated:
-  by: okfgen/0.1.1
-  at: "2026-08-16T02:50:43+00:00"
+  by: okfgen/0.1.2
+  at: "2026-08-16T13:48:45+00:00"
 format: CSV
 ---
 

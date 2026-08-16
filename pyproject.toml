@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "okfgen"
-version = "0.1.1"
+version = "0.1.2"
 description = "Turn any repo, database, docs site, or open-data portal into an AI-ready Open Knowledge Format (OKF) knowledge graph — deterministically, no LLM required."
 readme = "README.md"
 requires-python = ">=3.9"
