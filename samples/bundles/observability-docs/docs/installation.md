@@ -5,6 +5,10 @@ description: Documentation file `installation.md`.
 resource: installation.md
 tags:
   - documentation
+sources:
+  - resource: installation.md
+    title: installation.md
+    last_modified: 2026-07-01
 generated:
   by: okfgen/0.1.1
   at: "2026-07-01T00:00:00+00:00"

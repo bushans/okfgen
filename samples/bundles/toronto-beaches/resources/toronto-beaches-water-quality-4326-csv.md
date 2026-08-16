@@ -7,9 +7,13 @@ tags:
   - open-data
   - resource
   - csv
+sources:
+  - resource: "https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/92b0de8f-1ada-44a7-84cf-adc04868e990/resource/fa96223e-ccf8-4c0a-817b-6f5039311287/download/toronto-beaches-water-quality-4326.csv"
+    title: toronto-beaches-water-quality - 4326.csv
+    last_modified: 2026-08-15
 generated:
   by: okfgen/0.1.1
-  at: "2026-08-16T02:32:35+00:00"
+  at: "2026-08-16T02:50:43+00:00"
 format: CSV
 ---
 

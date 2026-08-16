@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import List
 
-from ..model import Bundle, Concept, LogEntry, slugify, utcnow_iso
+from ..model import Bundle, Concept, LogEntry, make_source, slugify, utcnow_iso
 from .base import Source, SourceError
 
 _PREFIXES = ("bq:", "bigquery:")
@@ -127,15 +127,19 @@ class BigQuerySource(Source):
         if meta:
             body = "# Examples\n\n" + "\n".join(meta) + "\n\n" + body
 
+        resource = (
+            f"https://console.cloud.google.com/bigquery?project={project}"
+            f"&d={ds_id}&t={table.table_id}&page=table"
+        )
+        modified = getattr(table, "modified", None)
         return Concept(
             path=f"tables/{slugify(ds_id)}-{slugify(table.table_id)}.md",
             type="BigQuery Table",
             title=f"{ds_id}.{table.table_id}",
             description=(table.description or f"Table `{ds_id}.{table.table_id}`.")[:200],
-            resource=(
-                f"https://console.cloud.google.com/bigquery?project={project}"
-                f"&d={ds_id}&t={table.table_id}&page=table"
-            ),
+            resource=resource,
             tags=["bigquery", "table", ds_id],
+            sources=[make_source(resource, id="table", title=f"{ds_id}.{table.table_id}",
+                                 last_modified=modified.isoformat() if modified else None)],
             body=body,
         )

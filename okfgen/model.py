@@ -23,6 +23,24 @@ CONVENTIONAL_HEADINGS = ("Schema", "Examples", "Computation", "Citations")
 PRODUCER = f"okfgen/{__version__}"
 
 
+def make_source(resource: str, *, id=None, title=None, author=None,
+                usage_count=None, last_modified=None) -> Dict[str, Any]:
+    """Build an OKF v0.2 `sources` entry (§5.1), dropping empty signals.
+
+    `resource` is required; `author`/`usage_count`/`last_modified` are the
+    optional per-source credibility signals. `last_modified` is normalized to a
+    `YYYY-MM-DD` date string when a longer ISO timestamp is given.
+    """
+    if last_modified:
+        last_modified = str(last_modified)[:10]
+    entry: Dict[str, Any] = {"resource": resource}
+    for k, v in (("id", id), ("title", title), ("author", author),
+                 ("usage_count", usage_count), ("last_modified", last_modified)):
+        if v not in (None, ""):
+            entry[k] = v
+    return entry
+
+
 def utcnow_iso() -> str:
     # Honor a fixed timestamp so committed sample bundles are reproducible.
     override = __import__("os").environ.get("OKFGEN_TIMESTAMP")
@@ -54,6 +72,7 @@ class Concept:
     resource: Optional[str] = None
     tags: List[str] = field(default_factory=list)
     timestamp: Optional[str] = None  # ISO time of last content change (-> generated.at)
+    sources: List[Dict[str, Any]] = field(default_factory=list)  # OKF v0.2 provenance (§5.1)
     body: str = ""
     extra: Dict[str, Any] = field(default_factory=dict)
 
@@ -67,6 +86,8 @@ class Concept:
             fm["resource"] = self.resource
         if self.tags:
             fm["tags"] = list(self.tags)
+        if self.sources:
+            fm["sources"] = self.sources
         # OKF v0.2: last content change is recorded as `generated: { by, at }`
         # (§5.2), which supersedes the v0.1 `timestamp` field (§13.1).
         fm["generated"] = {"by": PRODUCER, "at": self.timestamp or utcnow_iso()}

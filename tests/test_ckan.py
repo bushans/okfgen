@@ -98,6 +98,11 @@ def test_build_produces_dataset_and_resource_concepts():
     assert "Sunnyside" in res.body
     assert "108,284" in res.body
 
+    # OKF v0.2 provenance: overview carries publisher + last_modified signals.
+    assert overview.sources[0]["author"] == "City of Toronto"
+    assert overview.sources[0]["last_modified"] == "2026-04-15"
+    assert res.sources[0]["resource"] == "https://portal/datastore/dump/abc"
+
 
 def test_non_https_input_rejected():
     src = _StubCkan("ckan:not-a-url")

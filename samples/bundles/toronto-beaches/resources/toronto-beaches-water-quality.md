@@ -7,9 +7,13 @@ tags:
   - open-data
   - resource
   - geojson
+sources:
+  - resource: "https://ckan0.cf.opendata.inter.prod-toronto.ca/datastore/dump/8102bd4c-83cd-4354-9788-eecc0c7a09b4"
+    title: toronto-beaches-water-quality
+    last_modified: 2026-08-15
 generated:
   by: okfgen/0.1.1
-  at: "2026-08-16T02:32:35+00:00"
+  at: "2026-08-16T02:50:43+00:00"
 format: GeoJSON
 ---
 

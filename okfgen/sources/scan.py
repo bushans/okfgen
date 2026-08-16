@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from ..model import Bundle, Concept, LogEntry, slugify, utcnow_iso
+from ..model import Bundle, Concept, LogEntry, make_source, slugify, utcnow_iso
 
 # Directories that never carry useful knowledge for a bundle.
 IGNORE_DIRS = {
@@ -66,6 +66,16 @@ def _read_text(path: Path, limit: int = 200_000) -> Optional[str]:
         except UnicodeDecodeError:
             return None
     return text[:limit]
+
+
+def _mtime_date(path: Path) -> Optional[str]:
+    """Last-modified date (YYYY-MM-DD) of a file — a recency credibility signal."""
+    try:
+        import datetime as _dt
+        return _dt.datetime.fromtimestamp(
+            path.stat().st_mtime, _dt.timezone.utc).strftime("%Y-%m-%d")
+    except (OSError, OverflowError, ValueError):
+        return None
 
 
 def _first_heading(md: str) -> Optional[str]:
@@ -283,13 +293,15 @@ def scan_directory(
         heading = _first_heading(text) or f.stem.replace("-", " ").replace("_", " ").title()
         slug = slugify(f.stem)
         path = bundle.unique_path("docs", slug)
+        doc_resource = (resource_base.rstrip("/") + "/" + rel) if resource_base else rel
         bundle.add(Concept(
             path=path,
             type="Document",
             title=heading,
             description=f"Documentation file `{rel}`.",
-            resource=(resource_base.rstrip("/") + "/" + rel) if resource_base else rel,
+            resource=doc_resource,
             tags=["documentation"],
+            sources=[make_source(doc_resource, title=rel, last_modified=_mtime_date(f))],
             body=text.strip(),
         ))
 
@@ -328,13 +340,16 @@ def scan_directory(
         slug = slugify(directory.replace("/", "-")) if directory != "." else "root"
         path = bundle.unique_path("modules", slug)
         primary_langs = sorted({LANG_BY_EXT[cf.suffix.lower()] for cf in code_files})
+        dir_resource = (resource_base.rstrip("/") + "/" + directory) if resource_base and directory != "." else directory
+        latest = max((_mtime_date(cf) for cf in code_files), default=None)
         bundle.add(Concept(
             path=path,
             type="Code Module",
             title=f"{dir_label}",
             description=f"Source directory `{dir_label}` — {len(code_files)} file(s).",
-            resource=(resource_base.rstrip("/") + "/" + directory) if resource_base and directory != "." else directory,
+            resource=dir_resource,
             tags=["code"] + primary_langs,
+            sources=[make_source(dir_resource, title=dir_label, last_modified=latest)],
             body="\n".join(lines).strip(),
         ))
 

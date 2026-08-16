@@ -87,6 +87,10 @@ okfgen generate . -o my-okf && okfgen visualize my-okf -o my-okf/graph.html
   diff in git, and grep — not a proprietary database.
 - **Agent-ready.** Search, a citation-backed reasoning agent, and a portable
   JSON index make bundles first-class context for RAG and AI agents.
+- **Provenance built in (OKF v0.2).** Every concept records how it was produced
+  (`generated`) and what it derives from (`sources`) — with real credibility
+  signals where the source exposes them: publisher, **view counts**, and
+  freshness dates from live open-data portals.
 - **A viewer you can email.** The visualizer is a single self-contained HTML
   file — no backend, no CDN, data never leaves the page.
 - **Reference implementation of an open standard.** Tracks the OKF v0.2 spec;
@@ -140,8 +144,8 @@ okfgen generate socrata:https://data.cityofnewyork.us/d/erm2-nwe9  # a live Socr
 | `schema:FILE.json` / `.sql` | `schema` | dataset + table concepts with full column schemas — **no cloud creds** |
 | `bq:PROJECT` | `bigquery` | one concept per dataset and per table, with column schemas |
 | `firebase:PROJECT` | `firebase` | one concept per Firestore collection, fields/types inferred from sampled docs |
-| `ckan:PORTAL/dataset/SLUG` | `ckan` | a live [CKAN](https://ckan.org) open-data dataset → one concept per resource, with **live column schemas + example rows** from the DataStore. No auth; works against data.gov, data.gov.au, the EU portal, city portals, etc. |
-| `socrata:DOMAIN/d/4x4-ID` | `socrata` | a live [Socrata](https://dev.socrata.com) dataset (NYC Open Data, Seattle, Chicago, many state portals) → Dataset + Table concepts with **live column schema + descriptions + example rows**. No auth. |
+| `ckan:PORTAL/dataset/SLUG` | `ckan` | a live [CKAN](https://ckan.org) open-data dataset → one concept per resource, with **live column schemas + example rows** from the DataStore and **v0.2 credibility signals** (publisher, freshness). No auth; works against data.gov, data.gov.au, the EU portal, city portals, etc. |
+| `socrata:DOMAIN/d/4x4-ID` | `socrata` | a live [Socrata](https://dev.socrata.com) dataset (NYC Open Data, Seattle, Chicago, many state portals) → Dataset + Table concepts with **live column schema + example rows** and **credibility signals** (publisher, **real view counts** as `usage_count`, last-updated). No auth. |
 | `http(s)://…` | `web` | crawls same-host pages (depth/page budget) into one concept per page |
 
 Cloud sources use Application Default Credentials

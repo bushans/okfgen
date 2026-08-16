@@ -29,6 +29,8 @@ _PREFERRED_ORDER = [
     "description",
     "resource",
     "tags",
+    "sources",
+    "usage_window",
     "generated",
     "timestamp",
 ]
@@ -82,7 +84,19 @@ def dump(data: Dict[str, Any]) -> str:
                 continue
             lines.append(f"{key}:")
             for item in items:
-                lines.append(f"  - {_emit_scalar(item)}")
+                if isinstance(item, dict):
+                    # Block sequence of mappings (e.g. `sources`).
+                    first = True
+                    for sub_k, sub_v in item.items():
+                        if sub_v is None:
+                            continue
+                        prefix = "  - " if first else "    "
+                        lines.append(f"{prefix}{sub_k}: {_emit_scalar(sub_v)}")
+                        first = False
+                    if first:  # all sub-values were None -> emit an empty item
+                        lines.append("  - {}")
+                else:
+                    lines.append(f"  - {_emit_scalar(item)}")
         elif isinstance(value, dict):
             lines.append(f"{key}:")
             for sub_k, sub_v in value.items():

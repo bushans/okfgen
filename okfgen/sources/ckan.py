@@ -22,7 +22,7 @@ from typing import Dict, List, Optional
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
-from ..model import Bundle, Concept, LogEntry, slugify, utcnow_iso
+from ..model import Bundle, Concept, LogEntry, make_source, slugify, utcnow_iso
 from .base import Source, SourceError
 
 _PREFIX = "ckan:"
@@ -111,19 +111,23 @@ class CkanSource(Source):
             body_lines.append(f"- **Last modified:** {pkg['metadata_modified']}")
         body_lines.append(f"- **Resources:** {len(resources)}")
 
+        page_url = f"{self._base}/dataset/{slug}"
         bundle.add(Concept(
             path="overview.md",
             type="Dataset",
             title=title,
             description=(pkg.get("notes") or f"CKAN dataset `{slug}`.").strip()[:200],
-            resource=f"{self._base}/dataset/{slug}",
+            resource=page_url,
             tags=(["open-data", portal] + tags)[:12],
+            sources=[make_source(page_url, id="dataset", title=title,
+                                 author=org or None,
+                                 last_modified=pkg.get("metadata_modified"))],
             body="\n".join(body_lines),
         ))
 
         n_schemas = 0
         for r in resources:
-            concept, had_schema = self._resource_concept(slug, portal, r)
+            concept, had_schema = self._resource_concept(slug, portal, r, pkg.get("metadata_modified"))
             bundle.add(concept)
             n_schemas += 1 if had_schema else 0
 
@@ -134,7 +138,7 @@ class CkanSource(Source):
         ))
         return bundle
 
-    def _resource_concept(self, slug: str, portal: str, r: Dict):
+    def _resource_concept(self, slug: str, portal: str, r: Dict, dataset_modified=None):
         rid = r.get("id", "")
         name = r.get("name") or rid
         body_parts: List[str] = []
@@ -183,5 +187,8 @@ class CkanSource(Source):
             resource=r.get("url") or f"{self._base}/dataset/{slug}",
             tags=["open-data", "resource"] + ([r["format"].lower()] if r.get("format") else []),
             extra={"format": r.get("format", "")} if r.get("format") else {},
+            sources=[make_source(r.get("url") or f"{self._base}/dataset/{slug}",
+                                 title=name,
+                                 last_modified=r.get("last_modified") or dataset_modified)],
             body="\n".join(body_parts).strip() or f"{r.get('format','Data')} resource.",
         ), had_schema

@@ -5,6 +5,10 @@ description: Documentation file `getting-started.md`.
 resource: getting-started.md
 tags:
   - documentation
+sources:
+  - resource: getting-started.md
+    title: getting-started.md
+    last_modified: 2026-07-01
 generated:
   by: okfgen/0.1.1
   at: "2026-07-01T00:00:00+00:00"

@@ -13,7 +13,7 @@ from __future__ import annotations
 from collections import OrderedDict
 from typing import Dict
 
-from ..model import Bundle, Concept, LogEntry, slugify, utcnow_iso
+from ..model import Bundle, Concept, LogEntry, make_source, slugify, utcnow_iso
 from .base import Source, SourceError
 
 _PREFIXES = ("firebase:", "fb:", "firestore:")
@@ -131,13 +131,15 @@ class FirebaseSource(Source):
         if examples:
             body += "\n\n# Examples\n\n" + "\n".join(f"- Document id `{e}`" for e in examples)
 
+        resource = f"https://console.firebase.google.com/project/{project}/firestore/data/{coll.id}"
         return Concept(
             path=f"collections/{slugify(coll.id)}.md",
             type="Firestore Collection",
             title=coll.id,
             description=f"Collection `{coll.id}` — {doc_count} document(s) sampled, "
                         f"{len(field_types)} field(s) inferred.",
-            resource=f"https://console.firebase.google.com/project/{project}/firestore/data/{coll.id}",
+            resource=resource,
             tags=["firebase", "firestore", "collection"],
+            sources=[make_source(resource, id="collection", title=coll.id)],
             body=body,
         )

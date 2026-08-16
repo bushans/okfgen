@@ -33,7 +33,7 @@ import re
 from pathlib import Path
 from typing import Dict, List
 
-from ..model import Bundle, Concept, LogEntry, slugify, utcnow_iso
+from ..model import Bundle, Concept, LogEntry, make_source, slugify, utcnow_iso
 from .base import Source, SourceError
 
 _PREFIX = "schema:"
@@ -99,6 +99,7 @@ class SchemaSource(Source):
             description=data.get("description", f"{len(datasets)} dataset(s) in `{project}`.")[:200],
             resource=console,
             tags=["database", "catalog"],
+            sources=[make_source(console, id="database", title=title)] if console else [],
             body="# Schema\n\n" + "\n".join(
                 f"- [{d.get('id')}](/datasets/{slugify(d.get('id',''))}.md)" for d in datasets
             ),
@@ -152,6 +153,9 @@ class SchemaSource(Source):
             description=(table.get("description") or f"Table `{ds_id}.{name}`.")[:200],
             resource=table.get("resource", ""),
             tags=["database", "table", ds_id],
+            sources=[make_source(table["resource"], title=f"{ds_id}.{name}",
+                                 last_modified=table.get("last_modified"))]
+                    if table.get("resource") else [],
             body=body,
         )
 

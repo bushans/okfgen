@@ -23,7 +23,7 @@ from typing import Dict, List, Optional
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
-from ..model import Bundle, Concept, LogEntry, slugify, utcnow_iso
+from ..model import Bundle, Concept, LogEntry, make_source, slugify, utcnow_iso
 from .base import Source, SourceError
 
 _PREFIX = "socrata:"
@@ -85,6 +85,24 @@ class SocrataSource(Source):
 
         bundle = Bundle(title=name, description=description[:200], source=page_url)
 
+        # Real credibility signals from Socrata metadata (§5.1): the publisher
+        # (author), the all-time view count (usage_count), and when the data was
+        # last updated (last_modified).
+        last_mod = None
+        if meta.get("rowsUpdatedAt"):
+            try:
+                import datetime as _dt
+                last_mod = _dt.datetime.fromtimestamp(
+                    int(meta["rowsUpdatedAt"]), _dt.timezone.utc).strftime("%Y-%m-%d")
+            except (ValueError, OverflowError, OSError):
+                last_mod = None
+        ds_source = make_source(
+            page_url, id="dataset", title=name,
+            author=meta.get("attribution") or None,
+            usage_count=meta.get("viewCount"),
+            last_modified=last_mod,
+        )
+
         # Overview concept.
         meta_lines = []
         if meta.get("category"):
@@ -107,11 +125,17 @@ class SocrataSource(Source):
             description=description[:200],
             resource=page_url,
             tags=(["open-data", domain] + ([meta["category"]] if meta.get("category") else []))[:10],
+            sources=[ds_source],
             body="\n".join(overview_body),
         ))
 
         # Table concept with schema + example rows.
-        bundle.add(self._table_concept(base, domain, dataset_id, name, columns))
+        table_source = make_source(
+            f"{base}/resource/{dataset_id}", id="dataset", title=name,
+            author=meta.get("attribution") or None,
+            usage_count=meta.get("viewCount"), last_modified=last_mod,
+        )
+        bundle.add(self._table_concept(base, domain, dataset_id, name, columns, table_source))
 
         bundle.log_entries.append(LogEntry(
             date=utcnow_iso()[:10], action="Fetched",
@@ -120,7 +144,7 @@ class SocrataSource(Source):
         ))
         return bundle
 
-    def _table_concept(self, base, domain, dataset_id, name, columns) -> Concept:
+    def _table_concept(self, base, domain, dataset_id, name, columns, source=None) -> Concept:
         rows: List[str] = ["# Schema", "", "| Column | Field | Type | Description |",
                            "|---|---|---|---|"]
         for c in columns:
@@ -151,5 +175,6 @@ class SocrataSource(Source):
             description=f"Tabular data for Socrata dataset `{dataset_id}`.",
             resource=f"{base}/resource/{dataset_id}",
             tags=["open-data", "table", domain],
+            sources=[source] if source else [],
             body=body,
         )
