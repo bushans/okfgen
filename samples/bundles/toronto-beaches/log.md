@@ -1,6 +1,6 @@
 # Log
 
-## 2026-08-16
+## 2026-10-07
 
 - **Enriched** okfgen pass 2: 0 join(s), 9 backlink(s) added across 9 concept(s).
 

@@ -68,12 +68,12 @@ def _read_text(path: Path, limit: int = 200_000) -> Optional[str]:
     return text[:limit]
 
 
-def _mtime_date(path: Path) -> Optional[str]:
-    """Last-modified date (YYYY-MM-DD) of a file — a recency credibility signal."""
+def _mtime_iso(path: Path) -> Optional[str]:
+    """Last-modified ISO 8601 UTC datetime of a file — a recency credibility signal."""
     try:
         import datetime as _dt
         return _dt.datetime.fromtimestamp(
-            path.stat().st_mtime, _dt.timezone.utc).strftime("%Y-%m-%d")
+            path.stat().st_mtime, _dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     except (OSError, OverflowError, ValueError):
         return None
 
@@ -301,7 +301,7 @@ def scan_directory(
             description=f"Documentation file `{rel}`.",
             resource=doc_resource,
             tags=["documentation"],
-            sources=[make_source(doc_resource, title=rel, last_modified=_mtime_date(f))],
+            sources=[make_source(doc_resource, title=rel, last_modified=_mtime_iso(f))],
             body=text.strip(),
         ))
 
@@ -341,7 +341,7 @@ def scan_directory(
         path = bundle.unique_path("modules", slug)
         primary_langs = sorted({LANG_BY_EXT[cf.suffix.lower()] for cf in code_files})
         dir_resource = (resource_base.rstrip("/") + "/" + directory) if resource_base and directory != "." else directory
-        latest = max((_mtime_date(cf) for cf in code_files), default=None)
+        latest = max((_mtime_iso(cf) for cf in code_files), default=None)
         bundle.add(Concept(
             path=path,
             type="Code Module",

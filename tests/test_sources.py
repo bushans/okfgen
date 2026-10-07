@@ -8,14 +8,17 @@ from okfgen.consumer import load_bundle
 from okfgen.validate import validate_bundle
 
 
-def test_make_source_drops_empty_and_truncates_date():
+def test_make_source_drops_empty_and_normalizes_datetime():
     s = make_source("https://x", id="a", title=None, author="team:z",
                     usage_count=5000, last_modified="2026-05-30T21:06:39.8Z")
     assert s == {
         "resource": "https://x", "id": "a", "author": "team:z",
-        "usage_count": 5000, "last_modified": "2026-05-30",
+        "usage_count": 5000, "last_modified": "2026-05-30T21:06:39.8Z",
     }
     assert "title" not in s  # None dropped
+    # OKF v0.2: timestamp-valued keys are ISO 8601 datetimes with a UTC offset.
+    assert make_source("r", last_modified="2026-05-30")["last_modified"] == "2026-05-30T00:00:00Z"
+    assert make_source("r", last_modified="2026-05-30T10:00:00")["last_modified"] == "2026-05-30T10:00:00Z"
 
 
 def test_concept_emits_sources_block():
@@ -27,7 +30,7 @@ def test_concept_emits_sources_block():
     # URLs contain ':' so the emitter quotes them.
     assert '  - resource: "https://portal/x"' in doc
     assert "    author: City of Toronto" in doc
-    assert "last_modified: 2026-04-15" in doc
+    assert 'last_modified: "2026-04-15T00:00:00Z"' in doc
 
 
 def test_sources_roundtrip_through_yaml():

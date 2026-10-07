@@ -9,9 +9,9 @@ tags:
 sources:
   - resource: src
     title: src
-    last_modified: 2026-07-01
+    last_modified: "2026-07-01T05:08:21Z"
 generated:
-  by: okfgen/0.1.2
+  by: okfgen/0.1.3
   at: "2026-07-01T00:00:00+00:00"
 ---
 

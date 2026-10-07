@@ -8,9 +8,9 @@ tags:
 sources:
   - resource: ingest-api.md
     title: ingest-api.md
-    last_modified: 2026-07-01
+    last_modified: "2026-07-01T06:09:10Z"
 generated:
-  by: okfgen/0.1.2
+  by: okfgen/0.1.3
   at: "2026-07-01T00:00:00+00:00"
 ---
 

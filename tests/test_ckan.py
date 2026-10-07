@@ -100,7 +100,7 @@ def test_build_produces_dataset_and_resource_concepts():
 
     # OKF v0.2 provenance: overview carries publisher + last_modified signals.
     assert overview.sources[0]["author"] == "City of Toronto"
-    assert overview.sources[0]["last_modified"] == "2026-04-15"
+    assert overview.sources[0]["last_modified"] == "2026-04-15T21:06:39Z"
     assert res.sources[0]["resource"] == "https://portal/datastore/dump/abc"
 
 

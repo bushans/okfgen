@@ -23,16 +23,29 @@ CONVENTIONAL_HEADINGS = ("Schema", "Examples", "Computation", "Citations")
 PRODUCER = f"okfgen/{__version__}"
 
 
+def _iso_utc(value) -> Optional[str]:
+    """Normalize a date/datetime to an ISO 8601 datetime with an explicit UTC
+    offset, as OKF v0.2 requires for every timestamp-valued key (§5)."""
+    s = str(value).strip()
+    if not s:
+        return None
+    if re.match(r"^\d{4}-\d{2}-\d{2}$", s):  # date only -> midnight UTC
+        return s + "T00:00:00Z"
+    if re.search(r"([Zz]|[+-]\d{2}:?\d{2})$", s):  # already carries an offset
+        return s[:-1] + "Z" if s.endswith("z") else s
+    return s + "Z"  # datetime without an offset -> assume UTC
+
+
 def make_source(resource: str, *, id=None, title=None, author=None,
                 usage_count=None, last_modified=None) -> Dict[str, Any]:
     """Build an OKF v0.2 `sources` entry (§5.1), dropping empty signals.
 
     `resource` is required; `author`/`usage_count`/`last_modified` are the
-    optional per-source credibility signals. `last_modified` is normalized to a
-    `YYYY-MM-DD` date string when a longer ISO timestamp is given.
+    optional per-source credibility signals. `last_modified` is normalized to an
+    ISO 8601 datetime with an explicit UTC offset.
     """
     if last_modified:
-        last_modified = str(last_modified)[:10]
+        last_modified = _iso_utc(last_modified)
     entry: Dict[str, Any] = {"resource": resource}
     for k, v in (("id", id), ("title", title), ("author", author),
                  ("usage_count", usage_count), ("last_modified", last_modified)):

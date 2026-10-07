@@ -93,7 +93,7 @@ class SocrataSource(Source):
             try:
                 import datetime as _dt
                 last_mod = _dt.datetime.fromtimestamp(
-                    int(meta["rowsUpdatedAt"]), _dt.timezone.utc).strftime("%Y-%m-%d")
+                    int(meta["rowsUpdatedAt"]), _dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
             except (ValueError, OverflowError, OSError):
                 last_mod = None
         ds_source = make_source(
